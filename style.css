@@ -22,6 +22,7 @@
 
   /* Animation */
   --animation-duration: 300ms;
+  --animation-duration-fast: 100ms;
 }
 
 /* Universal tags */
@@ -89,6 +90,7 @@ button {
   border-radius: var(--size-border-radius-medium);
   font-size: var(--font-large);
   margin-bottom: 16px;
+  user-select: none;
 }
 
 .game__score {
@@ -101,6 +103,7 @@ button {
   line-height: 80px;
   text-align: center;
   color: var(--color-white);
+  user-select: none;
 }
 
 .game__timer--hide,
@@ -126,6 +129,12 @@ button {
   width: 70px;
   height: 70px;
   cursor: pointer;
+  transition: all var(--animation-duration-fast) ease-in;
+}
+
+.game__carrot:hover,
+.game__bug:hover {
+  transform: scale(1.1);
 }
 
 

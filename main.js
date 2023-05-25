@@ -18,6 +18,11 @@ const popUp = document.querySelector('.pop-up');
 const popUpMessage = document.querySelector('.pop-up__message');
 const popUpRefresh = document.querySelector('.pop-up__refresh');
 
+const carrotSound = new Audio('sound/carrot_pull.mp3');
+const bgSound = new Audio('sound/bg.mp3');
+const bugSound = new Audio('sound/bug_pull.mp3');
+const winSound = new Audio('sound/game_win.mp3');
+
 let started = false;
 let score = 0;
 let timer = undefined;
@@ -43,6 +48,7 @@ gameField.addEventListener('click', event => {
   if (target.matches('.game__carrot')) {
     target.remove();
     score++;
+    playSound(carrotSound);
     updateScore();
     
     if (score === COUNT_CARROT) {
@@ -62,15 +68,22 @@ function startGame() {
   showStopBtn();
   generateObjects('img/carrot.png', 'carrot', 'game__carrot', COUNT_CARROT);
   generateObjects('img/bug.png', 'bug', 'game__bug', COUNT_BUG);
+  playSound(bgSound);
 }
 
 function stopGame(text) {
+  if (score === COUNT_CARROT) {
+    playSound(winSound);
+  } else {
+    playSound(bugSound);
+  }
   started = false;
   score = 0;
   gameField.classList.add('game__field--stop');
   stopTimer();
   hidePlayBtn();
   showPopUpWithText(text);
+  stopSound(bgSound);
 }
 
 function hidePlayBtn() {
@@ -137,4 +150,13 @@ function generateObjects(src, alt, className, count) {
     img.setAttribute('style', `top:${position[1]}px; left:${position[0]}px;`);
     gameField.appendChild(img);
   }
+}
+
+function playSound(sound) {
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function stopSound(sound) {
+  sound.pause();
 }
