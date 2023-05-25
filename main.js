@@ -1,11 +1,13 @@
 'use strict'
 
 // click play button begins the game
-const COUNT_CARROT = 8;
+const COUNT_CARROT = 5;
 const COUNT_BUG = 10;
 const OBJ_HEIGHT = 70, OBJ_WIDTH = 70;
-const SECONDS = 10;
-const POPUP_TEXT = 'REPLAY?'
+const SECONDS = 5;
+const WON = 'YOU WON!';
+const LOST = 'YOU LOST!';
+const REPLAY = 'REPLAY?';
 
 const playBtn = document.querySelector('.game__play-btn');
 const gameField = document.querySelector('.game__field');
@@ -20,17 +22,41 @@ let started = false;
 let score = 0;
 let timer = undefined;
 
-playBtn.addEventListener('click', event => {
-  const target = event.target;
+playBtn.addEventListener('click', () => {
   if (started) {
-    stopGame();
+    stopGame(REPLAY);
   } else {
     startGame();
   }
-  started = !started;
+});
+
+popUpRefresh.addEventListener('click', () => {
+  hidePopUp();
+  startGame();
+});
+
+gameField.addEventListener('click', event => {
+  if (!started) {
+    return;
+  }
+  const target = event.target;
+  if (target.matches('.game__carrot')) {
+    target.remove();
+    score++;
+    updateScore();
+    
+    if (score === COUNT_CARROT) {
+      stopGame(WON);
+    }
+  } else if (target.matches('.game__bug')) {
+    stopGame(LOST);
+  }
 });
 
 function startGame() {
+  started = true;
+  gameField.innerHTML = '';
+  gameField.classList.remove('game__field--stop');
   showTimerAndScore();
   startTimer(SECONDS);
   showStopBtn();
@@ -38,14 +64,22 @@ function startGame() {
   generateObjects('img/bug.png', 'bug', 'game__bug', COUNT_BUG);
 }
 
-function stopGame() {
+function stopGame(text) {
+  started = false;
+  score = 0;
+  gameField.classList.add('game__field--stop');
   stopTimer();
+  hidePlayBtn();
+  showPopUpWithText(text);
+}
+
+function hidePlayBtn() {
   playBtn.classList.add('game__play-btn--hide');
-  showPopUpWithText(POPUP_TEXT);
 }
 
 function showStopBtn() {
-  const icon = playBtn.querySelector('.fa-play');
+  playBtn.classList.remove('game__play-btn--hide');
+  const icon = playBtn.querySelector('i');
   icon.classList.remove('fa-play');
   icon.classList.add('fa-stop');
 }
@@ -60,8 +94,12 @@ function startTimer(seconds) {
   updateTimer(seconds);
   timer = setInterval(() => {
     updateTimer(--seconds);
-    if (seconds <= 0) stopTimer();
+    if (seconds <= 0) stopGame(LOST);
   }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timer);
 }
 
 function updateTimer(time) {
@@ -70,13 +108,17 @@ function updateTimer(time) {
   gameTimer.textContent = `${minutes}:${seconds}`;
 }
 
-function stopTimer() {
-  clearInterval(timer);
+function updateScore() {
+  gameScore.textContent = COUNT_CARROT - score;
 }
 
 function showPopUpWithText(text) {
   popUp.classList.remove('pop-up--hide');
   popUpMessage.textContent = text;
+}
+
+function hidePopUp() {
+  popUp.classList.add('pop-up--hide');
 }
 
 function getRandomPosition(boundX, boundY) {
