@@ -32,7 +32,7 @@ playBtn.addEventListener('click', event => {
 
 function startGame() {
   showTimerAndScore();
-  countDown(SECONDS);
+  startTimer(SECONDS);
   showStopBtn();
   generateObjects('img/carrot.png', 'carrot', 'game__carrot', COUNT_CARROT);
   generateObjects('img/bug.png', 'bug', 'game__bug', COUNT_BUG);
@@ -52,17 +52,22 @@ function showStopBtn() {
 
 function showTimerAndScore() {
   gameTimer.classList.remove('game__timer--hide');
-  gameTimer.textContent = `0:${SECONDS}`;
   gameScore.classList.remove('game__score--hide');
   gameScore.textContent = `${COUNT_CARROT}`;
 }
 
-function countDown(seconds) {
+function startTimer(seconds) {
+  updateTimer(seconds);
   timer = setInterval(() => {
-    seconds--;
-    gameTimer.textContent = `0:${seconds}`;
-    if (seconds === 0) stopTimer();
+    updateTimer(--seconds);
+    if (seconds <= 0) stopTimer();
   }, 1000);
+}
+
+function updateTimer(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = time % 60;
+  gameTimer.textContent = `${minutes}:${seconds}`;
 }
 
 function stopTimer() {
